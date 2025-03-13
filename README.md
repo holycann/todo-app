@@ -40,7 +40,3 @@ A simple and intuitive todo application built with PHP and MySQL to help you man
 - PHP 7.4 or higher
 - MySQL 5.7 or higher
 - XAMPP or similar local server environment
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
