@@ -4,12 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Dynamic title with fallback -->
     <title><?php echo isset($title) ? $title : 'To-Do App'; ?></title>
 
+    <!-- External CSS stylesheets for styling and animations -->
     <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/slick.css" />
     <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/aos.css" />
     <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/output.css" />
     <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/style.css" />
+    <!-- JavaScript libraries for enhanced UI interactions -->
     <script src="<?= ASSETS_URL ?>/js/sweetalert2@11.js"></script>
     <script src="<?= ASSETS_URL ?>/js/jquery-3.6.0.min.js"></script>
     <script src="<?= ASSETS_URL ?>/js/jquery.validate.min.js"></script>
@@ -18,8 +21,9 @@
 <body>
     <section class="bg-white dark:bg-darkblack-500">
         <div class="flex flex-col lg:flex-row justify-between min-h-screen">
-            <!-- Left -->
+            <!-- Left side - Registration form -->
             <div class="lg:w-1/2 px-5 xl:pl-12 pt-10">
+                <!-- Logo header -->
                 <header>
                     <a href="i" class="">
                         <img src="<?= ASSETS_URL ?>/images/logo/logo-text.png" class="block dark:hidden" alt="Logo"
@@ -27,7 +31,9 @@
                     </a>
                 </header>
 
+                <!-- Registration form container -->
                 <div class="max-w-[460px] m-auto pt-24 pb-16">
+                    <!-- Form header -->
                     <header class="text-center mb-8">
                         <h2 class="text-bgray-900 dark:text-white text-4xl font-semibold font-poppins mb-2">
                             Sign up for an account
@@ -37,8 +43,9 @@
                         </p>
                     </header>
 
-                    <!-- Form -->
+                    <!-- Registration form -->
                     <form id="RegistrationForm" action="<?= BASE_ENDPOINT ?>/users" method="POST">
+                        <!-- Full name input field -->
                         <div class="mb-4">
                             <div>
                                 <input type="text" name="fullname"
@@ -46,16 +53,18 @@
                                     placeholder="Full name" required />
                             </div>
                         </div>
+                        <!-- Email input field -->
                         <div class="mb-4">
                             <input type="email" name="email"
                                 class="text-bgray-800 dark:text-white dark:bg-darkblack-500 dark:border-darkblack-400  text-base border border-bgray-300 h-14 w-full focus:border-success-300 focus:ring-0 rounded-lg px-4 py-3.5 placeholder:text-bgray-500 placeholder:text-base"
                                 placeholder="Email" required />
                         </div>
+                        <!-- Password input field with toggle visibility button -->
                         <div class="mb-6 relative">
                             <input type="password" name="password" id="password"
                                 class="text-bgray-800 dark:text-white dark:bg-darkblack-500 dark:border-darkblack-400  text-base border border-bgray-300 h-14 w-full focus:border-success-300 focus:ring-0 rounded-lg px-4 py-3.5 placeholder:text-bgray-500 placeholder:text-base"
                                 placeholder="Password" required />
-                            <button class="absolute top-4 right-4 bottom-4" onclick="showHidePassword()">
+                            <button class="absolute top-4 right-4 bottom-4" onclick="showHidePassword()" type="button">
                                 <svg width="22" height="20" viewBox="0 0 22 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2 1L20 19" stroke="#718096" stroke-width="1.5" stroke-linecap="round"
@@ -71,11 +80,12 @@
                                 </svg>
                             </button>
                         </div>
+                        <!-- Confirm password input field with toggle visibility button -->
                         <div class="mb-6 relative">
                             <input type="password" name="confirm_password" id="confirm_password"
                                 class="text-bgray-800 dark:text-white dark:bg-darkblack-500 dark:border-darkblack-400  text-base border border-bgray-300 h-14 w-full focus:border-success-300 focus:ring-0 rounded-lg px-4 py-3.5 placeholder:text-bgray-500 placeholder:text-base"
                                 placeholder="Confirm Password" required />
-                            <button class="absolute top-4 right-4 bottom-4" onclick="showHideConfirmPassword()">
+                            <button class="absolute top-4 right-4 bottom-4" onclick="showHideConfirmPassword()" type="button">
                                 <svg width="22" height="20" viewBox="0 0 22 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2 1L20 19" stroke="#718096" stroke-width="1.5" stroke-linecap="round"
@@ -91,6 +101,7 @@
                                 </svg>
                             </button>
                         </div>
+                        <!-- Terms and conditions agreement checkbox -->
                         <div class="flex justify-between mb-7">
                             <div class="flex items-center gap-x-3">
                                 <input type="checkbox"
@@ -103,20 +114,22 @@
                                         Policy</span>.</label>
                             </div>
                         </div>
+                        <!-- Submit button -->
                         <button type="submit"
                             class="py-3.5 flex items-center justify-center text-white font-bold bg-success-300 hover:bg-success-400 transition-all rounded-lg w-full">
                             Sign Up
                         </button>
                     </form>
-                    <!-- Form Bottom -->
+                    <!-- Sign in link for existing users -->
                     <p class="text-center text-bgray-900 dark:text-bgray-50 text-base font-medium pt-7">
                         Already have an account?
                         <a href="login" class="font-semibold underline">Sign In</a>
                     </p>
                 </div>
             </div>
-            <!-- Right -->
+            <!-- Right side - Decorative illustration and messaging -->
             <div class="lg:w-1/2 lg:block hidden bg-[#F6FAFF] dark:bg-darkblack-600 p-20 relative">
+                <!-- Decorative shapes -->
                 <ul>
                     <li class="absolute top-10 left-8">
                         <img src="<?= ASSETS_URL ?>/images/shapes/square.svg" alt="" />
@@ -128,9 +141,11 @@
                         <img src="<?= ASSETS_URL ?>/images/shapes/dotted.svg" alt="" />
                     </li>
                 </ul>
+                <!-- Main illustration -->
                 <div class="mb-10">
                     <img src="<?= ASSETS_URL ?>/images/illustration/signup.svg" alt="" />
                 </div>
+                <!-- Promotional messaging -->
                 <div>
                     <div class="text-center max-w-lg px-1.5 m-auto">
                         <h3 class="text-bgray-900 dark:text-white font-semibold font-popins text-4xl mb-4">
@@ -147,12 +162,38 @@
             </div>
         </div>
     </section>
+    <!-- JavaScript for password visibility toggle -->
     <script>
-        $(document).ready(function () {
-            $.validator.addMethod("passwordCheck", function (value) {
+        // Function to toggle password field visibility
+        function showHidePassword() {
+            const passwordField = document.getElementById('password');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
+
+        // Function to toggle confirm password field visibility
+        function showHideConfirmPassword() {
+            const confirmPasswordField = document.getElementById('confirm_password');
+            if (confirmPasswordField.type === 'password') {
+                confirmPasswordField.type = 'text';
+            } else {
+                confirmPasswordField.type = 'password';
+            }
+        }
+    </script>
+
+    <!-- jQuery validation for the registration form -->
+    <script>
+        $(document).ready(function() {
+            // Add custom validation method for password
+            $.validator.addMethod("passwordCheck", function(value) {
                 return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
             }, "Password must contain at least 1 uppercase, 1 lowercase, 1 number, 1 special character, and be at least 8 characters long.");
 
+            // Validate the registration form
             $("#RegistrationForm").validate({
                 rules: {
                     fullname: {
@@ -191,7 +232,7 @@
                 },
                 errorElement: "span",
                 errorClass: "error",
-                submitHandler: async function (form) {
+                submitHandler: async function(form) {
                     event.preventDefault();
 
                     const Toast = await Swal.mixin({
@@ -211,7 +252,7 @@
                         type: form.method,
                         data: $(form).serialize(),
                         dataType: "json",
-                        success: async function (response) {
+                        success: async function(response) {
                             console.log("response: " + response)
                             await Toast.fire({
                                 icon: "success",
@@ -221,7 +262,7 @@
                             });
 
                         },
-                        error: function (xhr) {
+                        error: function(xhr) {
                             console.log("xhr: ", xhr)
                             Swal.fire({
                                 icon: "error",
@@ -235,28 +276,6 @@
                 }
             });
         });
-    </script>
-
-    <script>
-        function showHidePassword() {
-            let passwordField = document.getElementById("password");
-
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-            } else {
-                passwordField.type = "password";
-            }
-        }
-        
-        function showHideConfirmPassword() {
-            let confirmPasswordField = document.getElementById("confirm_password");
-
-            if (confirmPasswordField.type === "password") {
-                confirmPasswordField.type = "text";
-            } else {
-                confirmPasswordField.type = "password";
-            }
-        }
     </script>
 
     <script src="<?= ASSETS_URL ?>/js/aos.js"></script>

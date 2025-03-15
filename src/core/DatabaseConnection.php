@@ -1,9 +1,33 @@
 <?php
+/**
+ * Database Connection Class
+ * 
+ * This class manages the database connection for the Todo application.
+ * It implements the Singleton pattern to ensure only one PDO instance
+ * is created throughout the application's lifecycle, reducing overhead
+ * and maintaining connection state.
+ * 
+ * The connection parameters are loaded from the environment configuration file.
+ */
 
 class DatabaseConnection
 {
+    /**
+     * PDO instance for database connection
+     * @var PDO|null
+     */
     private static ?PDO $pdo = null;
 
+    /**
+     * Establishes and returns a database connection
+     * 
+     * This method uses lazy loading to create a PDO connection only when needed.
+     * If a connection already exists, it returns the existing connection.
+     * It configures PDO to throw exceptions on errors and sets the default fetch mode.
+     * 
+     * @return PDO Active database connection
+     * @throws PDOException If connection fails (caught internally)
+     */
     public static function connect(): PDO
     {
         if (self::$pdo === null) {

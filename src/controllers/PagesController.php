@@ -1,42 +1,74 @@
 <?php
+/**
+ * Pages Controller
+ * 
+ * This controller handles the rendering of all page views in the application.
+ * It serves as a front controller for the presentation layer, initializing the
+ * required services, passing data to views, and managing authentication state
+ * for protected pages.
+ * 
+ * Routes to this controller are defined in the main router configuration.
+ */
+
+require_once __DIR__ . '/../services/UserService.php';
+require_once __DIR__ . '/../services/TaskService.php';
+require_once __DIR__ . '/../services/ReminderService.php';
+require_once __DIR__ . '/../core/Request.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class PagesController
 {
+    /**
+     * Services for data operations
+     * @var UserService
+     */
     private UserService $userService;
+    
+    /**
+     * @var TaskService
+     */
     private TaskService $taskService;
+    
+    /**
+     * @var ReminderService
+     */
     private ReminderService $reminderService;
+    
+    /**
+     * @var AuthMiddleware
+     */
+    private AuthMiddleware $authMiddleware;
+    
+    /**
+     * Constructor - initializes the required services
+     */
     public function __construct()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $this->userService = new UserService();
         $this->taskService = new TaskService();
         $this->reminderService = new ReminderService();
+        $this->authMiddleware = new AuthMiddleware();
     }
+    
+    /**
+     * Renders the homepage
+     * 
+     * Displays today's tasks and associated reminders. Handles authentication
+     * redirect if the user is not logged in.
+     * 
+     * URL: /
+     * 
+     * @return void
+     */
     public function Index()
     {
-        if (!isset($_SESSION['user_id']) && !isset($_COOKIE['user_token'])) {
-            header("Location: " . BASE_ENDPOINT . "/login");
-            exit;
-        }
-
-        $user_id = 0;
-
-        if (isset($_SESSION["user_id"])) {
-            $user_id = $_SESSION['user_id'];
-        } else if (isset($_COOKIE["user_token"])) {
-            $user_id = base64_decode($_COOKIE['user_token']);
-        }
-
-        $user_id = (int) $user_id;
+        $this->authMiddleware->requireAuth();
+        
+        $user_id = $_SESSION['user_id'];
         $user = $this->userService->getUserById($user_id);
-
-        if (!$user) {
-            session_unset();
-            session_destroy();
-            setcookie("user_token", "", time() - 3600, "/");
-
-            header("Location: " . BASE_ENDPOINT . "/login");
-            exit;
-        }
 
         $tasksToday = $this->taskService->getTasksToday();
         if ($tasksToday) {
@@ -54,49 +86,54 @@ class PagesController
         $slug = "Let's check your tasks today";
         require_once __DIR__ . '/../views/pages/HomePage.php';
     }
+    
+    /**
+     * Renders the login page
+     * 
+     * If user is already logged in, redirects to homepage.
+     * 
+     * URL: /login
+     * 
+     * @return void
+     */
     public function LoginPage()
     {
-        if (isset($_SESSION['user_id']) || isset($_COOKIE['user_token'])) {
-            $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : base64_decode($_COOKIE['user_token']);
-            $user = $this->userService->getUserById((int) $user_id);
-
-            if (!$user) {
-                session_unset();
-                session_destroy();
-                setcookie("user_token", "", time() - 3600, "/");
-            } else {
-                header("Location: " . BASE_ENDPOINT . "/");
-                exit;
-            }
-        }
-
+        $this->authMiddleware->redirectIfAuthenticated();
+        
         $title = "Login";
         require_once __DIR__ . '/../views/pages/auth/LoginPage.php';
     }
+    
+    /**
+     * Renders the registration page
+     * 
+     * If user is already logged in, redirects to homepage.
+     * 
+     * URL: /register
+     * 
+     * @return void
+     */
     public function RegisterPage()
     {
-        if (isset($_SESSION['user_id'])) {
-            header("Location: " . BASE_ENDPOINT . "/");
-        }
-
-        if (isset($_COOKIE['user_token'])) {
-            $user_id = base64_decode($_COOKIE['user_token']);
-            $user = $this->userService->getUserById($user_id);
-
-            if ($user) {
-                $_SESSION['user_id'] = $user->id;
-                header("Location: " . BASE_ENDPOINT . "/");
-            } else {
-                setcookie("user_token", "", time() - 3600, "/");
-            }
-        }
-
+        $this->authMiddleware->redirectIfAuthenticated();
+        
         $title = "Register";
         require_once __DIR__ . '/../views/pages/auth/RegisterPage.php';
     }
 
+    /**
+     * Renders the archived tasks page
+     * 
+     * Displays all completed tasks.
+     * 
+     * URL: /archived
+     * 
+     * @return void
+     */
     public function ArchivedPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "Archived";
         $nav_title = "Archived";
         $slug = "Let's check your archived tasks";
@@ -106,10 +143,20 @@ class PagesController
         require_once __DIR__ . '/../views/pages/ArchivedPage.php';
     }
 
+    /**
+     * Renders the task filter page
+     * 
+     * Allows users to filter and sort tasks based on various criteria.
+     * 
+     * URL: /filter
+     * 
+     * @return void
+     */
     public function FilterPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $data = Request::all();
-
         $filters = array_filter($data, fn($value) => !is_null($value) && $value !== '');
 
         if (empty($filters)) {
@@ -121,14 +168,24 @@ class PagesController
         }
 
         $title = "Filter";
-        $nav_title = "Filter Task";
-        $slug = "Let's check your filtered tasks";
-
+        $nav_title = "Filter";
+        $slug = "Let's filter your tasks";
         require_once __DIR__ . '/../views/pages/FilterPage.php';
     }
 
+    /**
+     * Renders the upcoming tasks page
+     * 
+     * Displays tasks grouped by due date for a specific month.
+     * 
+     * URL: /upcoming
+     * 
+     * @return void
+     */
     public function UpcomingPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $data = Request::all();
 
         $title = "Upcoming";
@@ -169,13 +226,21 @@ class PagesController
 
         require_once __DIR__ . '/../views/pages/UpcomingPage.php';
     }
+    
+    /**
+     * Renders the task detail page
+     * 
+     * Displays detailed information about a specific task and its associated reminder.
+     * 
+     * URL: /tasks/{id}
+     * 
+     * @param int $id The ID of the task to display
+     * @return void
+     */
     public function DetailTask($id)
     {
-        if (!isset($_SESSION['user_id']) && !isset($_COOKIE['user_token'])) {
-            header("Location: " . BASE_ENDPOINT . "/login");
-            exit;
-        }
-
+        $this->authMiddleware->requireAuth();
+        
         $task = $this->taskService->getTask($id) ? $this->taskService->getTask($id)->toArray() : [];
 
         if (!$task) {
@@ -191,16 +256,35 @@ class PagesController
         require_once __DIR__ . '/../views/pages/tasks/DetailTask.php';
     }
     
+    /**
+     * Renders the add task page
+     * 
+     * URL: /tasks/add
+     * 
+     * @return void
+     */
     public function AddTaskPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "Add Task";
         $nav_title = "Add Task";
         $slug = "Let's add a new task";
         require_once __DIR__ . '/../views/pages/tasks/AddEditTask.php';
     }
 
+    /**
+     * Renders the edit task page
+     * 
+     * URL: /tasks/{id}/edit
+     * 
+     * @param int $id The ID of the task to edit
+     * @return void
+     */
     public function EditTaskPage($id)
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "Edit Task";
         $nav_title = "Edit Task";
         $slug = "Let's edit a task";
@@ -211,8 +295,17 @@ class PagesController
         require_once __DIR__ . '/../views/pages/tasks/AddEditTask.php';
     }
 
+    /**
+     * Renders the add reminder page
+     * 
+     * URL: /reminders/add
+     * 
+     * @return void
+     */
     public function AddReminderPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "Add Reminder";
         $nav_title = "Add Reminder";
         $slug = "Let's add a new reminder";
@@ -222,8 +315,18 @@ class PagesController
         require_once __DIR__ . '/../views/pages/reminders/AddEditReminder.php';
     }
 
+    /**
+     * Renders the edit reminder page
+     * 
+     * URL: /reminders/{id}/edit
+     * 
+     * @param int $id The ID of the reminder to edit
+     * @return void
+     */
     public function EditReminderPage($id)
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "Edit Reminder";
         $nav_title = "Edit Reminder";
         $slug = "Let's edit a reminder";
@@ -242,8 +345,18 @@ class PagesController
         require_once __DIR__ . '/../views/pages/reminders/AddEditReminder.php';
     }
 
+    /**
+     * Renders the reminder detail page
+     * 
+     * URL: /reminders/{id}
+     * 
+     * @param int $id The ID of the reminder to display
+     * @return void
+     */
     public function DetailReminderPage($id)
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "Detail Reminder";
         $nav_title = "Detail Reminder";
         $slug = "Let's check a reminder detail";
@@ -261,8 +374,17 @@ class PagesController
         require_once __DIR__ . '/../views/pages/reminders/DetailReminder.php';
     }
 
+    /**
+     * Renders the list of all reminders page
+     * 
+     * URL: /reminders
+     * 
+     * @return void
+     */
     public function ListReminderPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "List Reminder";
         $nav_title = "List Reminder";
         $slug = "Let's check your reminders";
@@ -272,8 +394,19 @@ class PagesController
         require_once __DIR__ . '/../views/pages/reminders/ListReminder.php';
     }
 
+    /**
+     * Renders the reminder history page
+     * 
+     * Displays all sent reminders.
+     * 
+     * URL: /reminders/history
+     * 
+     * @return void
+     */
     public function HistoryReminderPage()
     {
+        $this->authMiddleware->requireAuth();
+        
         $title = "History Reminder";
         $nav_title = "History Reminder";
         $slug = "Let's check your history reminders";

@@ -46,7 +46,7 @@
                             <input type="password" name="password" id="password"
                                 class="text-bgray-800 text-base border border-bgray-300 dark:border-darkblack-400 dark:bg-darkblack-500 dark:text-white h-14 w-full focus:border-success-300 focus:ring-0 rounded-lg px-4 py-3.5 placeholder:text-bgray-500 placeholder:text-base"
                                 placeholder="Password" required />
-                            <button class="absolute top-4 right-4 bottom-4" onclick="showHidePassword()">
+                            <button class="absolute top-4 right-4 bottom-4" onclick="showHidePassword()" type="button">
                                 <svg width="22" height="20" viewBox="0 0 22 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2 1L20 19" stroke="#718096" stroke-width="1.5" stroke-linecap="round"
