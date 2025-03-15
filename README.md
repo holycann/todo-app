@@ -19,21 +19,27 @@ A simple and intuitive todo application built with PHP and MySQL to help you man
    git clone https://github.com/holycann/todo-app.git
    ```
 2. Migrate database schema with command.
-   For Migration Up
+   - For Migration Up
 
    ```php
    php database/migration.php up
    ```
 
-   For Migration Down
+   - For Migration Down
 
    ```php
    php database/migration.php down
    ```
 
+   - For Insert Data Dummy
+
+   ```php
+   php database/dummy.php
+   ```
+
 3. Configure the database connection in `config/env.php`.
 4. Start the Apache and MySQL servers using XAMPP.
-5. Access the application at `http://localhost/todo-app`.
+5. Access the application at `http://localhost/todo-app` / `http://localhost/{your-folder-path}`.
 
 ## 🛠️ Requirements
 
